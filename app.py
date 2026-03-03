@@ -856,45 +856,55 @@ def render_ritual_screen():
             '</div>',
             unsafe_allow_html=True,
         )
-        # 牌背即按钮：点击牌背直接跳转，不单独「开始抽牌」
-        col_a, col_b, col_c = st.columns([1, 1, 1])
-        with col_b:
-            back_data = _local_image_as_data_url(BACK_IMAGE_PATH) if BACK_IMAGE_PATH.exists() else None
-            if back_data:
-                st.markdown(
-                    f"""
-                    <style>
-                    [data-testid="column"]:nth-child(2) .stButton > button {{
-                        width: 180px; height: 300px; margin: 0 auto;
-                        display: block; background: url("{back_data}") center/cover no-repeat;
-                        border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-                        cursor: pointer; color: transparent; font-size: 0;
-                    }}
-                    [data-testid="column"]:nth-child(2) .stButton {{ display: flex; justify-content: center; }}
-                    @media (max-width: 768px) {{ [data-testid="column"]:nth-child(2) .stButton > button {{ width: 150px; height: 250px; }} }}
-                    </style>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            else:
-                st.markdown(
-                    """
-                    <style>
-                    [data-testid="column"]:nth-child(2) .stButton > button {
-                        width: 180px; height: 300px; margin: 0 auto;
-                        display: block; background: linear-gradient(135deg, #D4C4D8 0%, #C8B8CC 50%, #DCD4E0 100%);
-                        border: 1px solid rgba(139,119,139,0.3); border-radius: 12px;
-                        box-shadow: 0 4px 20px rgba(0,0,0,0.08); cursor: pointer; color: transparent; font-size: 0;
-                    }
-                    [data-testid="column"]:nth-child(2) .stButton { display: flex; justify-content: center; }
-                    @media (max-width: 768px) { [data-testid="column"]:nth-child(2) .stButton > button { width: 150px; height: 250px; } }
-                    </style>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            if st.button("\u00A0", key="flip_card", help="点击翻开"):
-                st.session_state["ritual_phase"] = "reveal"
-                st.rerun()
+        # 牌背即按钮：本页只有一个按钮，用 section.main 限定；始终显示「点击翻开」
+        back_data = _local_image_as_data_url(BACK_IMAGE_PATH) if BACK_IMAGE_PATH.exists() else None
+        if back_data:
+            st.markdown(
+                f"""
+                <style>
+                section.main [data-testid="stButton"] > button {{
+                    min-width: 180px !important; width: 180px !important;
+                    min-height: 280px !important; height: 280px !important;
+                    margin: 0 auto !important; display: block !important;
+                    background: url("{back_data}") center/cover no-repeat !important;
+                    border: none !important; border-radius: 12px !important;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+                    cursor: pointer !important; color: #5A4A6A !important;
+                    font-size: 0.95rem !important; letter-spacing: 0.15em !important;
+                }}
+                section.main [data-testid="stButton"] {{ display: flex !important; justify-content: center !important; width: 100% !important; }}
+                @media (max-width: 768px) {{
+                    section.main [data-testid="stButton"] > button {{ min-width: 160px !important; width: 160px !important; min-height: 240px !important; height: 240px !important; font-size: 0.85rem !important; }}
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                """
+                <style>
+                section.main [data-testid="stButton"] > button {
+                    min-width: 180px !important; width: 180px !important;
+                    min-height: 280px !important; height: 280px !important;
+                    margin: 0 auto !important; display: block !important;
+                    background: linear-gradient(135deg, #D4C4D8 0%, #C8B8CC 50%, #DCD4E0 100%) !important;
+                    border: 1px solid rgba(139,119,139,0.3) !important; border-radius: 12px !important;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+                    cursor: pointer !important; color: #5A4A6A !important;
+                    font-size: 0.95rem !important; letter-spacing: 0.15em !important;
+                }
+                section.main [data-testid="stButton"] { display: flex !important; justify-content: center !important; width: 100% !important; }
+                @media (max-width: 768px) {
+                    section.main [data-testid="stButton"] > button { min-width: 160px !important; width: 160px !important; min-height: 240px !important; height: 240px !important; font-size: 0.85rem !important; }
+                }
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
+        if st.button("点击翻开", key="flip_card"):
+            st.session_state["ritual_phase"] = "reveal"
+            st.rerun()
     else:
         # 牌面左、解读右（网页版）；窄屏竖版堆叠
         is_reversed = " · 逆位" in card_name
